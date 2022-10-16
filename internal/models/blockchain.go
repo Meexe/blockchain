@@ -1,16 +1,17 @@
-package block
+package models
 
 import "time"
 
+// Blockchain - блокчейн
 type Blockchain struct {
-	chain      []Block
-	difficulty int
+	Chain      []Block `json:"chain"`
+	Difficulty int     `json:"diff"`
 }
 
 func CreateBlockchain(difficulty int) Blockchain {
 	genesisBlock := Block{
 		HashSum: "0",
-		Ts:      time.Now(),
+		Ts:      time.Now().Unix(),
 	}
 	return Blockchain{
 		[]Block{genesisBlock},
@@ -19,26 +20,26 @@ func CreateBlockchain(difficulty int) Blockchain {
 }
 
 func (b *Blockchain) add(data Transactions) error {
-	lastBlock := b.chain[len(b.chain)-1]
+	lastBlock := b.Chain[len(b.Chain)-1]
 	newBlock := &Block{
 		Transactions: data,
 		PrevHash:     lastBlock.HashSum,
-		Ts:           time.Now(),
+		Ts:           time.Now().Unix(),
 	}
 
-	hash, err := newBlock.Mine(b.difficulty)
+	hash, err := newBlock.Mine(b.Difficulty)
 	if err != nil {
 		return err
 	}
 
 	newBlock.HashSum = hash
-	b.chain = append(b.chain, *newBlock)
+	b.Chain = append(b.Chain, *newBlock)
 	return nil
 }
 
 func (b *Blockchain) validate(depth int) (isValid bool, err error) {
-	for i := len(b.chain) - 1; i > len(b.chain)-depth-1; i++ {
-		var current, prev = b.chain[i], b.chain[i-1]
+	for i := len(b.Chain) - 1; i > len(b.Chain)-depth-1; i++ {
+		var current, prev = b.Chain[i], b.Chain[i-1]
 		if isValid, err = current.Validate(); err != nil || !isValid {
 			return
 		}

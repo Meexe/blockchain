@@ -1,19 +1,19 @@
-package block
+package models
 
 import (
 	"crypto/sha256"
 	"fmt"
 	"strings"
-	"time"
 )
 
+// Block - блок в блокчейне
 //easyjson:json
 type Block struct {
 	HashSum      string       `json:"hash,omitempty"`
 	PrevHash     string       `json:"prevHash"`
 	Transactions Transactions `json:"transactions"`
-	Ts           time.Time    `json:"ts"`
-	Pow          int          `json:"pow"`
+	Ts           int64        `json:"ts"`
+	Pow          int64        `json:"pow"`
 }
 
 func (b Block) Hash() (string, error) {
